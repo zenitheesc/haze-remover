@@ -45,14 +45,51 @@
 ## Steps to run and debug
 
 `For now, the only code available is for configuring the data set.`
+ 
+The first thing you need to do is create a .env file at the root of the project. 
 
+```bash
+.
+├── dataset
+│   ├── generate.py
+│   ├── google_mps_api.py
+│   └── __init__.py
+├── LICENSE
+├── main.py
+├── README.md
+└── .env  <---
+```
+Inside .env file you must add the following line
+
+```
+GOOGLE_API_KEY="YOUR_API_KEY"
+```
+To generate your google maps api key follow the instructions in https://developers.google.com/maps/documentation/maps-static/overview
+
+All the code related with the data set generation is located at **dataset** module.
+To run and setup the data set you can just run the following code at the root of the project directory.
+
+```
+python3 main.py
+```
+This will generate 16000 images, 8000 clean images at **/images** folder and 8000 haze images at **/results** folder.
+
+**/images** folder
+<p align="center">
+    <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/images.png"/>
+</p>
+<br>
+
+**/results** folder
+<p align="center">
+    <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/results.png"/>
+</p>
 <!--- ## How to contribute
 
 `(optional, depends on the project) list of simple rules to help people work on the project.`
 
 `Examples: How to format a pull request\n How to format an issue` --->
 
----
 
 <p align="center">
     <a href="http://zenith.eesc.usp.br">
