@@ -9,8 +9,8 @@ BASE_URL = "https://maps.googleapis.com/maps/api/staticmap?"
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
 def imgDownload(centerLat=-21.9469896, centerLon=-47.7320201, zoom=15):
-	for latitude in range(0, 5, 1):
-		for longitude in range (0, 2, 1):
+	for latitude in range(0, 1000, 1):
+		for longitude in range (0, 10, 1):
 			
 			coordenate = str(centerLat + latitude/10) + "," + str(centerLon + longitude/10)
 
