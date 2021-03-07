@@ -55,20 +55,21 @@ def gradient(h, x, y):
 	g = vectors[h%4]
 	return g[:,:,0] * x + g[:,:,1] * y
 
+def generate():
+	kernel = np.ones((3,3),np.uint8)
 
-kernel = np.ones((3,3),np.uint8)
+	blank = np.zeros((256,256,3), np.uint8)
+	blank[:] = (255,255,255)
 
-blank = np.zeros((256,256,3), np.uint8)
-blank[:] = (255,255,255)
+	for file in os.listdir("images/"):
+		print(file)
+		normal_img = cv2.imread("images/" + file)
 
+		images = rotate(normal_img)
 
-for file in os.listdir("images/"):
-	print(file)
-	normal_img = cv2.imread("images/" + file)
+		hazing(images, kernel, blank, file)
 
-	#cv2.imshow("Original", normal_img)
-	#cv2.moveWindow("Original", 10, 0)
-	#cv2.waitKey(1)
+def rotate(normal_img):
 
 	images = list()
 
@@ -82,7 +83,10 @@ for file in os.listdir("images/"):
 	images.append(imutils.rotate_bound(flip_img, 90))
 	images.append(imutils.rotate_bound(flip_img, 180))
 	images.append(imutils.rotate_bound(flip_img, 270))
-	
+
+	return images
+
+def hazing(images, kernel, blank, fileName):
 	j = 0
 	i = 0
 	for img in images:
@@ -101,7 +105,7 @@ for file in os.listdir("images/"):
 
 		mask = noise
 
-		imgName = "rotate_" + str(i) + "_" + file
+		imgName = "rotate_" + str(i) + "_" + fileName
 
 		if(i != 0):#The routated images with no haze will be saved at the same folder as the google api images
 			cv2.imwrite("images/" + imgName, img)
@@ -110,12 +114,11 @@ for file in os.listdir("images/"):
 		
 		#cv2.imshow("res_" + str(i) + "_" + str(j), res)
 		#cv2.moveWindow("res_" + str(i) + "_" + str(j), 435, 0)
-#
-#		#cv2.waitKey(1500)
+		#cv2.waitKey(1500)
 		#cv2.destroyWindow("res_" + str(i) + "_" + str(j))
 		
 		if(i == 0):
-			cv2.imwrite("results/" + file, res)
+			cv2.imwrite("results/" + fileName, res)
 		else:		
 			cv2.imwrite("results/" + imgName, res)
 
