@@ -116,11 +116,11 @@ def hazing(images, kernel, blank, fileName):
 		#cv2.moveWindow("res_" + str(i) + "_" + str(j), 435, 0)
 		#cv2.waitKey(1500)
 		#cv2.destroyWindow("res_" + str(i) + "_" + str(j))
-		
+
 		if(i == 0):
-			cv2.imwrite("results/" + fileName, res)
+			cv2.imwrite("hazed/" + fileName, res)
 		else:		
-			cv2.imwrite("results/" + imgName, res)
+			cv2.imwrite("hazed/" + imgName, res)
 
 		j += 1
 		i += 1

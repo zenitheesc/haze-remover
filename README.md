@@ -72,7 +72,7 @@ To run and setup the data set you can just run the following code at the root of
 ```
 python3 main.py
 ```
-This will generate 16000 images, 8000 clean images at **/images** folder and 8000 haze images at **/results** folder.
+This will generate 16000 images, 8000 clean images at **/images** folder and 8000 haze images at **/hazed** folder.
 
 **/images** folder
 <p align="center">
@@ -80,7 +80,7 @@ This will generate 16000 images, 8000 clean images at **/images** folder and 800
 </p>
 <br>
 
-**/results** folder
+**/hazed** folder
 <p align="center">
     <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/results.png"/>
 </p>
