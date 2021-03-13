@@ -4,5 +4,4 @@
 __pycache__/
 *.py[cod]
 
-images/*
-hazed/*
+*.png
