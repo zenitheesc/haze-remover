@@ -17,11 +17,11 @@ if __name__ == "__main__":
         os.mkdir("images/clean")
         
     google_mps_api.imgDownload(centerLat=-21.946989, centerLon=-47.732020)
-    #google_mps_api.imgDownload(centerLat=-11.074495, centerLon=-42.051459)
-    #google_mps_api.imgDownload(centerLat=-10.198966, centerLon=-46.872713)
-    #google_mps_api.imgDownload(centerLat=-16.618904, centerLon=-70.077475)
-    #google_mps_api.imgDownload(centerLat=-23.669320, centerLon=-46.559369)
-    #google_mps_api.imgDownload(centerLat=38.080750, centerLon=81.888615)
+    google_mps_api.imgDownload(centerLat=-11.074495, centerLon=-42.051459)
+    google_mps_api.imgDownload(centerLat=-10.198966, centerLon=-46.872713)
+    google_mps_api.imgDownload(centerLat=-16.618904, centerLon=-70.077475)
+    google_mps_api.imgDownload(centerLat=-23.669320, centerLon=-46.559369)
+    google_mps_api.imgDownload(centerLat=38.080750, centerLon=81.888615)
     generate.generate()
     
 #-11.0744952,-42.0514597

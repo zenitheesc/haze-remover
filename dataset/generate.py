@@ -62,13 +62,13 @@ def generate():
 	blank = np.zeros((256,256,3), np.uint8)
 	blank[:] = (255,255,255)
 
-	for file in os.listdir("images/clean"):
+	for file in os.listdir("images/originais"):
 		print(file)
 
-		total_clean_path = "images/clean/" + file
-		total_hazed_path = "images/hazed/" + file
+		total_clean_path = "images/clean/rotate_0_" + file
+		total_original_path = "images/originais/" + file
 
-		if(os.path.isfile(total_clean_path) and not(os.path.exists(total_hazed_path))):
+		if(not(os.path.exists(total_clean_path))):
 			
 			first_name = file.split('_')[0]
 			if(first_name == "rotate"):
@@ -89,7 +89,7 @@ def generate():
 				time.sleep(3)
 			else:
 				print("quem passou " + file)
-				normal_img = cv2.imread(total_clean_path)
+				normal_img = cv2.imread(total_original_path)
 		
 				images = rotate(normal_img)
 		
@@ -113,7 +113,6 @@ def rotate(normal_img):
 	return images
 
 def hazing(images, kernel, blank, fileName):
-	j = 0
 	i = 0
 	for img in images:
 		lin = np.linspace(0,2 + np.random.random_integers(5), 256, endpoint=True)
@@ -133,20 +132,14 @@ def hazing(images, kernel, blank, fileName):
 
 		imgName = "rotate_" + str(i) + "_" + fileName
 
-		if(i != 0):#The routated images with no haze will be saved at the same folder as the google api images
-			cv2.imwrite("images/clean/" + imgName, img)
+		#The images with no haze will be saved in the clean folder
+		cv2.imwrite("images/clean/" + imgName, img)
 		#res = noise
 		res = alphaBlend(img, blank, mask)
 		
-		#cv2.imshow("res_" + str(i) + "_" + str(j), res)
-		#cv2.moveWindow("res_" + str(i) + "_" + str(j), 435, 0)
-		#cv2.waitKey(1500)
-		#cv2.destroyWindow("res_" + str(i) + "_" + str(j))
+		#The images with no haze will be saved in the clean folder
+		cv2.imwrite("images/clean/" + imgName, img)
+		#The images with haze will be saved in the hazed folder
+		cv2.imwrite("images/hazed/" + imgName, res)
 
-		if(i == 0):
-			cv2.imwrite("images/hazed/" + fileName, res)
-		else:		
-			cv2.imwrite("images/hazed/" + imgName, res)
-
-		j += 1
 		i += 1
