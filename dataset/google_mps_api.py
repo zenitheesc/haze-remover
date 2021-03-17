@@ -12,7 +12,7 @@ def imgDownload(centerLat=-21.9469896, centerLon=-47.7320201, zoom=15, path="ima
 	for latitude in range(0, 1, 1):
 		for longitude in range (0, 1, 1):
 			
-			coordenate = str(centerLat + latitude/10) + "," + str(centerLon + longitude/10)
+			coordenate = str(centerLat + latitude/10.0) + "," + str(centerLon + longitude/10.0)
 
 			file_total_path = path + coordenate + ".png"
 
