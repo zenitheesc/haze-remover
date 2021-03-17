@@ -4,6 +4,7 @@ import numpy as np
 import imutils
 import cv2
 import os
+import time
 
 def alphaBlend(img1, img2, mask):
     """ alphaBlend img1 and img 2 (of CV_8UC3) with mask (CV_8UC1 or CV_8UC3)
@@ -61,13 +62,38 @@ def generate():
 	blank = np.zeros((256,256,3), np.uint8)
 	blank[:] = (255,255,255)
 
-	for file in os.listdir("images/"):
+	for file in os.listdir("images/clean"):
 		print(file)
-		normal_img = cv2.imread("images/" + file)
 
-		images = rotate(normal_img)
+		total_clean_path = "images/clean/" + file
+		total_hazed_path = "images/hazed/" + file
 
-		hazing(images, kernel, blank, file)
+		if(os.path.isfile(total_clean_path) and not(os.path.exists(total_hazed_path))):
+			
+			first_name = file.split('_')[0]
+			if(first_name == "rotate"):
+
+				print("The last file has a name beggining with 'rotate' and there is no corresponding file in images/hazed/ folder")
+				opt = input("Delete " + total_clean_path+" ?[y/n]")
+
+				while (opt != 'y' and opt != 'n'):
+					opt = input("Delete " + total_clean_path+" ?[y/n]")
+
+				if(opt == 'y'):
+					print(total_clean_path + " will be excluded")
+					os.remove(total_clean_path)
+				else:
+					print(total_clean_path + " will be keeped in images/clean/ folder, but no noise neither rotation will be made with it")
+					print("At the end of dataset setup, take a look at the number of files from images/clean/ and images/hazed/")
+					
+				time.sleep(3)
+			else:
+				print("quem passou " + file)
+				normal_img = cv2.imread(total_clean_path)
+		
+				images = rotate(normal_img)
+		
+				hazing(images, kernel, blank, file)
 
 def rotate(normal_img):
 
@@ -108,7 +134,7 @@ def hazing(images, kernel, blank, fileName):
 		imgName = "rotate_" + str(i) + "_" + fileName
 
 		if(i != 0):#The routated images with no haze will be saved at the same folder as the google api images
-			cv2.imwrite("images/" + imgName, img)
+			cv2.imwrite("images/clean/" + imgName, img)
 		#res = noise
 		res = alphaBlend(img, blank, mask)
 		
@@ -118,9 +144,9 @@ def hazing(images, kernel, blank, fileName):
 		#cv2.destroyWindow("res_" + str(i) + "_" + str(j))
 
 		if(i == 0):
-			cv2.imwrite("hazed/" + fileName, res)
+			cv2.imwrite("images/hazed/" + fileName, res)
 		else:		
-			cv2.imwrite("hazed/" + imgName, res)
+			cv2.imwrite("images/hazed/" + imgName, res)
 
 		j += 1
 		i += 1
