@@ -6,15 +6,17 @@ import os
 if __name__ == "__main__":
     
     if(not (os.path.exists("images"))):
-    	os.mkdir("images")
-    	os.mkdir("images/hazed")
-    	os.mkdir("images/clean")
-
-    elif(not (os.path.exists("images/hazed"))):	
+        os.mkdir("images")
         os.mkdir("images/hazed")
-
-    if(not (os.path.exists("images/clean"))):
         os.mkdir("images/clean")
+        os.mkdir("images/originais")
+    else:
+        if(not (os.path.exists("images/hazed"))):	
+            os.mkdir("images/hazed")
+        if(not (os.path.exists("images/clean"))):
+            os.mkdir("images/clean")
+        if(not (os.path.exists("images/originais"))):
+            os.mkdir("images/originais")
         
     google_mps_api.imgDownload(centerLat=-21.946989, centerLon=-47.732020)
     google_mps_api.imgDownload(centerLat=-11.074495, centerLon=-42.051459)
@@ -30,4 +32,3 @@ if __name__ == "__main__":
 #24.4984753,5.458369
 #38.0807507,81.8886153
 #-23.6693206,-46.5593699 sbc
-    

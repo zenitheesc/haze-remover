@@ -2,9 +2,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import imutils
+import time
 import cv2
 import os
-import time
 
 def alphaBlend(img1, img2, mask):
     """ alphaBlend img1 and img 2 (of CV_8UC3) with mask (CV_8UC1 or CV_8UC3)
@@ -62,8 +62,11 @@ def generate():
 	blank = np.zeros((256,256,3), np.uint8)
 	blank[:] = (255,255,255)
 
-	for file in os.listdir("images/originais"):
-		print(file)
+	arquivos = os.listdir("images/originais")
+	i = 0
+	for file in arquivos:
+		i += 1
+		print("\n" + str(i) + " / " + str(len(arquivos)))
 
 		total_clean_path = "images/clean/rotate_0_" + file
 		total_original_path = "images/originais/" + file
@@ -118,23 +121,20 @@ def hazing(images, kernel, blank, fileName):
 		lin = np.linspace(0,2 + np.random.random_integers(5), 256, endpoint=True)
 		x,y = np.meshgrid(lin, lin) # FIX3: I thought I had to invert x and y here but it was a mistake
 
-		noise = perlin(x, y, seed=-1)
-
+		noise = perlin(x, y)
+		
 		noise = noise + 1
-		noise = noise[:] / 3
-		noise = noise * 255
-
+		noise = noise[:] / 2
+		
+		noise = noise[:] - 0.4
+		noise[noise < 0] = 0
+		noise = noise[:] * 400 #255
 		noise = noise.astype(np.uint8)
-
-		#dilation = cv2.dilate(noise,kernel,iterations = 1)
 
 		mask = noise
 
 		imgName = "rotate_" + str(i) + "_" + fileName
 
-		#The images with no haze will be saved in the clean folder
-		cv2.imwrite("images/clean/" + imgName, img)
-		#res = noise
 		res = alphaBlend(img, blank, mask)
 		
 		#The images with no haze will be saved in the clean folder
