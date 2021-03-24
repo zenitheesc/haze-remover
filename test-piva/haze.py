@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.datasets import fashion_mnist
 from tensorflow.keras.layers import Conv2DTranspose, Conv2D, Input
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 class HazeRemover(tf.keras.Model): 
   def __init__(self):
@@ -9,48 +10,101 @@ class HazeRemover(tf.keras.Model):
     super(HazeRemover, self).__init__() 
 
     self.encoder = tf.keras.Sequential([ 
-      Input(shape=(28, 28, 1)), 
-      Conv2D(16, (3,3), activation='relu', padding='same', strides=2), 
-      Conv2D(8, (3,3), activation='relu', padding='same', strides=2)]) 
-    
+      Input(shape=(256, 256, 3)), 
+      Conv2D(128, (3,3), activation='relu', padding='same', strides=2), 
+      Conv2D(64, (3,3), activation='relu', padding='same', strides=2),
+      Conv2D(32, (3,3), activation='relu', padding='same', strides=2)])
     self.decoder = tf.keras.Sequential([ 
-      Conv2DTranspose(8, kernel_size=3, strides=2, activation='relu', padding='same'), 
-      Conv2DTranspose(16, kernel_size=3, strides=2, activation='relu', padding='same'), 
-      Conv2D(1, kernel_size=(3,3), activation='sigmoid', padding='same')]) 
+      Conv2DTranspose(32, kernel_size=3, strides=2, activation='relu', padding='same'), 
+      Conv2DTranspose(64, kernel_size=3, strides=2, activation='relu', padding='same'), 
+      Conv2DTranspose(128, kernel_size=3, strides=2, activation='relu', padding='same'), 
+      Conv2D(3, kernel_size=(3,3), activation='sigmoid', padding='same')]) 
   
   def call(self, x): 
     encoded = self.encoder(x) 
     decoded = self.decoder(encoded) 
     return decoded
 
-# We don't need y_train and y_test
-(x_train, _), (x_test, _) = fashion_mnist.load_data()
+def process(image):
+    image = tf.cast(image/255. ,tf.float32)
+    return image
 
-x_train = x_train.astype('float32') / 255.
-x_test = x_test.astype('float32') / 255.
-x_train = x_train[..., tf.newaxis]
-x_test = x_test[..., tf.newaxis]
-print(x_train.shape)
-print(x_test.shape)
-print('Max value in the x_train is', x_train[0].max())
-print('Min value in the x_train is', x_train[0].min())
 
-#Creates y_train and y_test
-noise_factor = 0.4
-x_train_noisy = x_train + noise_factor * tf.random.normal(shape=x_train.shape) 
-x_test_noisy = x_test + noise_factor * tf.random.normal(shape=x_test.shape)
-x_train_noisy = tf.clip_by_value(x_train_noisy, clip_value_min=0., clip_value_max=1.) 
-x_test_noisy = tf.clip_by_value(x_test_noisy, clip_value_min=0., clip_value_max=1.)
+x_train = tf.keras.preprocessing.image_dataset_from_directory(
+  "C:\\Users\\Rodrigo\\Desktop\\Rodrigo\\USP\\Zenith\\Rede Neural\\GitHub\\Visao\\images\\clean",
+  label_mode = None,
+  class_names = None,
+  color_mode = 'rgb',
+  batch_size = 32,
+  image_size = (256, 256),
+  shuffle = False,
+  validation_split = 0.1,
+  subset = "training"
+)
+x_test = tf.keras.preprocessing.image_dataset_from_directory(
+  "C:\\Users\\Rodrigo\\Desktop\\Rodrigo\\USP\\Zenith\\Rede Neural\\GitHub\\Visao\\images\\clean",
+  label_mode = None,
+  class_names = None,
+  color_mode = 'rgb',
+  batch_size = 32,
+  image_size = (256, 256),
+  shuffle = False,
+  validation_split = 0.1,
+  subset = "validation"
+)
+
+x_train_noisy = tf.keras.preprocessing.image_dataset_from_directory(
+  "C:\\Users\\Rodrigo\\Desktop\\Rodrigo\\USP\\Zenith\\Rede Neural\\GitHub\\Visao\\images\\hazed",
+  label_mode = None,
+  class_names = None,
+  color_mode = 'rgb',
+  batch_size = 32,
+  image_size = (256, 256),
+  shuffle = False,
+  validation_split = 0.1,
+  subset = "training"
+)
+x_test_noisy = tf.keras.preprocessing.image_dataset_from_directory(
+  "C:\\Users\\Rodrigo\\Desktop\\Rodrigo\\USP\\Zenith\\Rede Neural\\GitHub\\Visao\\images\\hazed",
+  label_mode = None,
+  class_names = None,
+  color_mode = 'rgb',
+  batch_size = 32,
+  image_size = (256, 256),
+  shuffle = False,
+  validation_split = 0.1,
+  subset = "validation"
+)
+
+train = x_train.map(process)
+train_noisy = x_train_noisy.map(process)
+test = x_test.map(process)
+test_noisy = x_test_noisy.map(process)
+
+dataset_train = tf.data.Dataset.zip( (train, train_noisy) )
+dataset_val = tf.data.Dataset.zip( (test, test_noisy) )
+
+
+checkpoint = ModelCheckpoint(
+  "best_model.hdf5",
+  monitor = 'loss',
+  verbose = 1,
+  save_best_only = True,
+  mode = 'auto',
+  save_freq = 1
+)
 
 autoencoder = HazeRemover()
 autoencoder.compile(optimizer='adam', loss='mse')
 
-autoencoder.fit(x_train_noisy, 
-                x_train, 
-                epochs=10, 
-                shuffle=True, 
-                validation_data=(x_test_noisy, x_test))
+autoencoder.fit(
+  dataset_train,
+  epochs = 1,
+  shuffle = False,
+  validation_data = dataset_val
+)
 
+autoencoder.save("test-piva\\models")
 
 encoded_imgs=autoencoder.encoder(x_test_noisy).numpy()
 decoded_imgs=autoencoder.decoder(encoded_imgs)
