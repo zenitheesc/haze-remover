@@ -66,12 +66,13 @@ def generate():
 	i = 0
 	for file in arquivos:
 		i += 1
-		print("\n" + str(i) + " / " + str(len(arquivos)))
 
 		total_clean_path = "images/clean/rotate_0_" + file
 		total_original_path = "images/originais/" + file
 
 		if(not(os.path.exists(total_clean_path))):
+			
+			print("\n" + str(i) + " / " + str(len(arquivos)))
 			
 			first_name = file.split('_')[0]
 			if(first_name == "rotate"):
