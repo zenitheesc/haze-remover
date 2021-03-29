@@ -14,11 +14,9 @@ def numpy_array_images(dataset_path="../images/"):
     total_memory, used_memory, free_memory = map(
     	int, os.popen('free -t -m').readlines()[-1].split()[1:])
 
-    # Memory usage
-    print(free_memory)
-    print("RAM memory % used:", round((used_memory/total_memory) * 100, 2))
+    ram_before = round((used_memory/total_memory) * 100, 2)
+    print("RAM memory % used before images load:", ram_before)
 
-    i=0
     for file in os.listdir(dataset_path + "clean/"):
           
         clean = cv2.imread(dataset_path + "clean/" + file)
@@ -36,10 +34,12 @@ def numpy_array_images(dataset_path="../images/"):
         total_memory, used_memory, free_memory = map(
     	int, os.popen('free -t -m').readlines()[-1].split()[1:])
 
-        if(i == 300):
+        ram_current = round((used_memory/total_memory) * 100, 2)
+
+        if(ram_current - ram_before >= 2): # In my case, the increase of 2% in the use of ram was a good limit.
             break
     
-    # Getting all memory using os.popen()
+    print("RAM memory % used after images load:", ram_current)
 
     cleanFiles = np.array(cleanFiles)
     hazedFiles = np.array(hazedFiles)
@@ -72,8 +72,3 @@ def dataset_split(cleanFiles, hazedFiles, test_split=0.2):
 
     return train, test
 
-cleanFiles, hazedFiles, fileNames = numpy_array_images()
-train, test = dataset_split(cleanFiles, hazedFiles, 0.5)
-print(train[0].shape)
-print(test[0].shape)
-print(len(fileNames))

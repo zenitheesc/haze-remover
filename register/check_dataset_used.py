@@ -13,7 +13,7 @@ def clean_images_used(register_path="./coordinates.txt", dataset_path="./images/
         clean_path = dataset_path + "clean/" + file_already_trained
         original_path = dataset_path + "originais/" + file_already_trained
 
-        if(os.path.exists(hazed_path)):
+        if(os.path.exists(hazed_path) and os.path.isfile(hazed_path) and os.path.isfile(clean_path)):
 
             print("The file " + file_already_trained + " was already used to train de AI")
             print("It will be removed from data set")
@@ -21,7 +21,7 @@ def clean_images_used(register_path="./coordinates.txt", dataset_path="./images/
             os.remove(hazed_path)
             os.remove(clean_path)
 
-        if(os.path.exists(original_path)):
+        if(os.path.exists(original_path) and os.path.isfile(original_path)):
             os.remove(original_path)
 
 def clean_incongruities(dataset_path="./images/"):
