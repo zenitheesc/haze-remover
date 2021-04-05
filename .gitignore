@@ -5,3 +5,6 @@ __pycache__/
 *.png
 .vscode
 .env
+*.hdf5
+images/gen.py
+test-piva/hazeTest.py

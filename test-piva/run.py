@@ -7,13 +7,14 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 import os
 
 
+BatchSize = 32
 
 x_test = tf.keras.preprocessing.image_dataset_from_directory(
   "C:\\Users\\Rodrigo\\Desktop\\Rodrigo\\USP\\Zenith\\Rede Neural\\GitHub\\Visao\\images\\clean",
   label_mode = None,
   class_names = None,
   color_mode = 'rgb',
-  batch_size = 32,
+  batch_size = BatchSize,
   image_size = (256, 256),
   shuffle = False,
   validation_split = 0.1,
@@ -24,7 +25,7 @@ x_test_noisy = tf.keras.preprocessing.image_dataset_from_directory(
   label_mode = None,
   class_names = None,
   color_mode = 'rgb',
-  batch_size = 32,
+  batch_size = BatchSize,
   image_size = (256, 256),
   shuffle = False,
   validation_split = 0.1,
@@ -33,7 +34,7 @@ x_test_noisy = tf.keras.preprocessing.image_dataset_from_directory(
 
 test_haze = []
 for images in x_test_noisy.take(1):
-    for i in range(32):
+    for i in range(BatchSize):
         img = images[i].numpy()
         img = img / 255
         img = img.astype(np.float32)
@@ -41,7 +42,7 @@ for images in x_test_noisy.take(1):
 
 test = []
 for images in x_test.take(1):
-    for i in range(32):
+    for i in range(BatchSize):
         img = images[i].numpy()
         img = img / 255
         img = img.astype(np.float32)
@@ -56,28 +57,37 @@ model = tf.keras.models.load_model("test-piva\\models")
 encoded_imgs=model.encoder(test_haze).numpy()
 decoded_imgs=model.decoder(encoded_imgs)
 
+offset = 2
 n = 8
+
 plt.figure(figsize=(20, 7))
 plt.gray()
-for i in range(n): 
+for i in range(n):
   # display original + noise 
-  bx = plt.subplot(3, n, i + 1) 
+  bx = plt.subplot(4, n, i + 1) 
   plt.title("original + noise") 
-  plt.imshow(tf.squeeze(test_haze[i])) 
+  plt.imshow(tf.squeeze(test_haze[i + offset])) 
   bx.get_xaxis().set_visible(False) 
   bx.get_yaxis().set_visible(False) 
   
   # display reconstruction 
-  cx = plt.subplot(3, n, i + n + 1) 
+  cx = plt.subplot(4, n, i + n + 1) 
+  plt.title("Encoded") 
+  plt.imshow(tf.squeeze(encoded_imgs[i + offset])) 
+  cx.get_xaxis().set_visible(False) 
+  cx.get_yaxis().set_visible(False) 
+  
+  # display reconstruction 
+  cx = plt.subplot(4, n, i + 2*n + 1) 
   plt.title("reconstructed") 
-  plt.imshow(tf.squeeze(decoded_imgs[i])) 
+  plt.imshow(tf.squeeze(decoded_imgs[i + offset])) 
   cx.get_xaxis().set_visible(False) 
   cx.get_yaxis().set_visible(False) 
   
   # display original 
-  ax = plt.subplot(3, n, i + 2*n + 1) 
+  ax = plt.subplot(4, n, i + 3*n + 1) 
   plt.title("original") 
-  plt.imshow(tf.squeeze(test[i])) 
+  plt.imshow(tf.squeeze(test[i + offset])) 
   ax.get_xaxis().set_visible(False) 
   ax.get_yaxis().set_visible(False) 
 
