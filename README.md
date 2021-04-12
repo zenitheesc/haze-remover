@@ -1,4 +1,4 @@
-<h1 align="center" style="color:white; background-color:black">Computer Vision</h1>
+<h1 align="center" style="color:white; background-color:black">Haze Remover</h1>
 <h4 align="center">Software development to remove fog from images captured during probe missions.</h4>
 
 <p align="center">
