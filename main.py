@@ -39,10 +39,3 @@ if __name__ == "__main__":
         google_mps_api.imgDownload(centerLat=coord[0], centerLon=coord[1], zoom = zoom)
     
     generate.generate()
-    
-#-11.0744952,-42.0514597
-#-10.1989664,-46.8727137
-#-16.6189048,-70.077475
-#24.4984753,5.458369
-#38.0807507,81.8886153
-#-23.6693206,-46.5593699 sbc
