@@ -9,6 +9,8 @@ BASE_URL = "https://maps.googleapis.com/maps/api/staticmap?"
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
 def imgDownload(centerLat=-21.9469896, centerLon=-47.7320201, zoom=15, path="images/originais/"):
+	error_img = Image.open('./error.png')
+
 	for latitude in range(0, 2, 1):
 		for longitude in range (0, 2, 1):
 			
@@ -32,6 +34,12 @@ def imgDownload(centerLat=-21.9469896, centerLon=-47.7320201, zoom=15, path="ima
 				img = Image.open(file_total_path)
 
 				cropped_filtred = img.crop((0,0,256,256))
-				cropped_filtred.save(file_total_path)
+
+				if list(cropped_filtred.getdata()) == list(error_img.getdata()):
+					print("There is no image in " + coordenate)
+					os.remove(file_total_path)
+				else: 
+					cropped_filtred.save(file_total_path)
 			else:
 				print("File " + file_total_path + " already exists")
+ 
