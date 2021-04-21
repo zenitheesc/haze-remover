@@ -32,8 +32,11 @@ if __name__ == "__main__":
         [-0.442852, 23.886118], #Congo
         [36.901435, 100.194718], #Lago Qinghai, China
 		[-31.985363, 17.425811], #Africa do Sul
-		[42.728016, -124.475192] #Oregon
+		[42.728016, -124.475192], #Oregon
+        [-42.493494, -161.950480] #Oceano
     ]
+
+    list_coords = []
 
     for coord in list_coords:
         google_mps_api.imgDownload(centerLat=coord[0], centerLon=coord[1], zoom = zoom)

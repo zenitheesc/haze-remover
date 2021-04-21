@@ -11,8 +11,8 @@ API_KEY = os.getenv("GOOGLE_API_KEY")
 def imgDownload(centerLat=-21.9469896, centerLon=-47.7320201, zoom=15, path="images/originais/"):
 	error_img = Image.open('./error.png')
 
-	for latitude in range(0, 2, 1):
-		for longitude in range (0, 2, 1):
+	for latitude in range(0, 15, 1):
+		for longitude in range (0, 30, 1):
 			
 			coordenate = str(centerLat + latitude/1.5) + "," + str(centerLon + longitude/1.5)
 

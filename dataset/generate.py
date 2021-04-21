@@ -126,10 +126,20 @@ def hazing(images, kernel, blank, fileName):
 		noise = noise + 1
 		noise = noise[:] / 2
 		
+		mask = noise.copy()
+		mask[mask < 0.7] = 0
+		mask = mask + 0.15
+		mask[mask > 1] = 1
+		mask = mask[:] * 255
+		mask = mask.astype(np.uint8)
+
+		img = alphaBlend(img, blank, mask)
+
 		noise = noise[:] - 0.4
 		noise[noise < 0] = 0
 		noise = noise[:] * 400 #255
 		noise = noise.astype(np.uint8)
+
 
 		mask = noise
 
