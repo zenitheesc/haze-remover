@@ -95,9 +95,9 @@ This will generate a certain number of images, half of the images will be clean 
     <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/results.png"/>
 </p>
 
-Before determinate the number of images you are going to use, there are a couple things you need to known about the code operation.
+Before determining the number of images you are going to use, there are a few things you need to know about the code operation.
 
-The function responsible to the images downloads is the **imgDownload** located at **dataset/google_maps_api.py**. This function work by reciving a coordinate position and then keep changing the longitude and latitude values over two **for** loops.
+The function responsible for downloading images is the **imgDownload** located at **dataset/google_maps_api.py**. This function works by taking a coordinate position and then changing the longitude and latitude values ​​in two **for** loops.
 
 ```python
 
@@ -109,7 +109,29 @@ So the number of images that will be downloaded after call **imgDownload** once 
 
 After downloading the images, the function **generate**, which is responsible for generating the hazed images, will be called. This function is located at **dataset/generate.py**. In addition to generating fog in the images, this function increases the number of images by rotating them 7 times.
 
-Thus, the total number of the images after using one coordinate, by calling **imgDownload** once, are going to be 450*8 = 3600. Note that, in the **main** function, located at **./main.py**, we are using 13 different coordinates parameters, so we are calling the **imgDownload** function 13 times.
+Thus, the total number of the images after using one coordinate, by calling **imgDownload** once and than **generate**, are going to be 450 * 8 = 3600. Note that, in the **main** function, located at **./main.py**, we are using 13 different coordinates parameters, so we are calling the **imgDownload** function 13 times. If you use all coordinates, your data set will consist of 3600 * 13 = 46800 images in **/images/clean** and another 46800 images in **/images/hazed**. The folder **/images/originais** contains only the images that have been downloaded, they have no transformation.
+
+To simplify this analysis, use the following formula
+
+```
+number_of_clean_images = number_of_hazed_images = range_in_loop * number_of_coordinates * 8
+
+number_of_images_in_originais = range_in_loop
+
+total = number_of_clean_images + number_of_hazed_images + number_of_images_in_originais
+```
+In our case
+```
+range_in_loop = 15 * 30 = 450
+number_of_coordinates = 13
+
+number_of_clean_images = number_of_hazed_images = 450 * 13 * 8 = 46800
+
+number_of_images_in_originais = 450
+
+total = 46800 + 46800 + 450 = 94050
+```
+
 
 <!--- ## How to contribute
 
