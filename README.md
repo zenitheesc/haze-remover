@@ -84,15 +84,22 @@ python3 main.py
 ```
 This will generate a certain number of images, half of the images will be clean images and they will be saved at **/images/clean**. The other half will be the hazed images, they will be saved at **/images/hazed** folder. These folders will look like this.
 
+
+**/images/originais** folder
+<p align="center">
+    <img src="https://raw.githubusercontent.com/zenitheesc/haze-remover/assets/originais_readme.png"/>
+</p>
+<br>
+
 **/images/clean** folder
 <p align="center">
-    <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/images.png"/>
+    <img src="https://raw.githubusercontent.com/zenitheesc/haze-remover/assets/clean_readme.png"/>
 </p>
 <br>
 
 **/images/hazed** folder
 <p align="center">
-    <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/results.png"/>
+    <img src="https://raw.githubusercontent.com/zenitheesc/haze-remover/assets/hazed_readme.png"/>
 </p>
 
 Before determining the number of images you are going to use, there are a few things you need to know about the code operation.
