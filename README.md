@@ -44,7 +44,6 @@
 - [Tensorflow](https://www.tensorflow.org/): ^2.5.0,
 ## Steps to run and debug
 
-`For now, the only code available is for configuring the data set.`
  
 The first thing you need to do is create a .env file at the root of the project. 
 
@@ -54,10 +53,20 @@ The first thing you need to do is create a .env file at the root of the project.
 │   ├── generate.py
 │   ├── google_mps_api.py
 │   └── __init__.py
+├── error.png
+├── images
+│   ├── clean
+│   ├── hazed
+│   └── originais
 ├── LICENSE
 ├── main.py
+├── network
+│   ├── haze.py
+│   ├── run.py
+│   └── validation.py
 ├── README.md
 └── .env  <---
+
 ```
 Inside .env file you must add the following line
 
@@ -67,23 +76,70 @@ GOOGLE_API_KEY="YOUR_API_KEY"
 To generate your google maps api key follow the instructions in https://developers.google.com/maps/documentation/maps-static/overview
 
 All the code related with the data set generation is located at **dataset** module.
-To run and setup the data set you can just run the following code at the root of the project directory.
+
+After generate and setup your api key, now you can just run the following code at the root of the project directory.
 
 ```
 python3 main.py
 ```
-This will generate 16000 images, 8000 clean images at **/images** folder and 8000 haze images at **/hazed** folder.
+This will generate a certain number of images, half of the images will be clean images and they will be saved at **/images/clean**. The other half will be the hazed images, they will be saved at **/images/hazed** folder. These folders will look like this.
 
-**/images** folder
+
+**/images/originais** folder
 <p align="center">
-    <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/images.png"/>
+    <img src="https://raw.githubusercontent.com/zenitheesc/haze-remover/assets/originais_readme.png"/>
 </p>
 <br>
 
-**/hazed** folder
+**/images/clean** folder
 <p align="center">
-    <img src="https://raw.githubusercontent.com/zenitheesc/Visao/assets/results.png"/>
+    <img src="https://raw.githubusercontent.com/zenitheesc/haze-remover/assets/clean_readme.png"/>
 </p>
+<br>
+
+**/images/hazed** folder
+<p align="center">
+    <img src="https://raw.githubusercontent.com/zenitheesc/haze-remover/assets/hazed_readme.png"/>
+</p>
+
+Before determining the number of images you are going to use, there are a few things you need to know about the code operation.
+
+The function responsible for downloading images is the **imgDownload** located at **dataset/google_maps_api.py**. This function works by taking a coordinate position and then changing the longitude and latitude values ​​in two **for** loops.
+
+```python
+
+for latitude in range(0, 15, 1):
+		for longitude in range (0, 30, 1):
+
+```
+So the number of images that will be downloaded after call **imgDownload** once are going to be 15*30 = 450 images. But you can change these values depending on your need. So far, these are only the clean images.
+
+After downloading the images, the function **generate**, which is responsible for generating the hazed images, will be called. This function is located at **dataset/generate.py**. In addition to generating fog in the images, this function increases the number of images by rotating them 7 times.
+
+Thus, the total number of the images after using one coordinate, by calling **imgDownload** once and than **generate**, are going to be 450 * 8 = 3600. Note that, in the **main** function, located at **./main.py**, we are using 13 different coordinates parameters, so we are calling the **imgDownload** function 13 times. If you use all coordinates, your data set will consist of 3600 * 13 = 46800 images in **/images/clean** and another 46800 images in **/images/hazed**. The folder **/images/originais** contains only the images that have been downloaded, they have no transformation.
+
+To simplify this analysis, use the following formula
+
+```
+number_of_clean_images = number_of_hazed_images = range_in_loop * number_of_coordinates * 8
+
+number_of_images_in_originais = range_in_loop
+
+total = number_of_clean_images + number_of_hazed_images + number_of_images_in_originais
+```
+In our case
+```
+range_in_loop = 15 * 30 = 450
+number_of_coordinates = 13
+
+number_of_clean_images = number_of_hazed_images = 450 * 13 * 8 = 46800
+
+number_of_images_in_originais = 450
+
+total = 46800 + 46800 + 450 = 94050
+```
+
+
 <!--- ## How to contribute
 
 `(optional, depends on the project) list of simple rules to help people work on the project.`
