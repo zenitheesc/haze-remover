@@ -138,8 +138,18 @@ number_of_images_in_originais = 450
 
 total = 46800 + 46800 + 450 = 94050
 ```
+### Using the neural network
+After creating your data set, you already can train your neural network. All the code related with the neural network usage is located at **network** folder.
+Inside **network** folder you will find 3 files:
+- haze.py -> Responsible for training and saving the neural network model.
+- validation.py -> Responsible for validating the neural network model trained by haze.py, on the data set.
+- run.py -> Take a single image from your local directory and apply the trained neural network. 
 
-
+Note that it may be necessary to change some paths for the files over these 3 files.
+To run each of the files, you can just access the **network** folder and type
+```bash
+python3 <file_name.py>
+``` 
 <!--- ## How to contribute
 
 `(optional, depends on the project) list of simple rules to help people work on the project.`
