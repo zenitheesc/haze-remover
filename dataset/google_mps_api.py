@@ -8,6 +8,8 @@ load_dotenv()
 BASE_URL = "https://maps.googleapis.com/maps/api/staticmap?"
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
+#Downloads images from the request coordinates in a 15x30 coordinate grid 
+
 def imgDownload(centerLat=-21.9469896, centerLon=-47.7320201, zoom=15, path="images/originais/"):
 	error_img = Image.open('./error.png')
 

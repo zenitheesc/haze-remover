@@ -6,6 +6,7 @@ import time
 import cv2
 import os
 
+#Adds two images with the requested alpha mask
 def alphaBlend(img1, img2, mask):
     """ alphaBlend img1 and img 2 (of CV_8UC3) with mask (CV_8UC1 or CV_8UC3)
     """
@@ -16,6 +17,7 @@ def alphaBlend(img1, img2, mask):
     blended = cv2.convertScaleAbs(img1*(1-alpha) + img2*alpha)
     return blended
 
+#Generates the perlin noise mask
 def perlin(x, y, seed = -1):
 	# permutation table
 	if(seed != -1):
@@ -42,20 +44,21 @@ def perlin(x, y, seed = -1):
 	x2 = lerp(n01,n11,u) # FIX1: I was using n10 instead of n01
 	return lerp(x1,x2,v) # FIX2: I also had to reverse x1 and x2 here
 
+#linear interpolation
 def lerp(a, b, x):
-	"linear interpolation"
 	return a + x * (b-a)
 
+#6t^5 - 15t^4 + 10t^3
 def fade(t):
-	"6t^5 - 15t^4 + 10t^3"
 	return 6 * t**5 - 15 * t**4 + 10 * t**3
 
+#grad converts h to the right gradient vector and return the dot product with (x,y)
 def gradient(h, x, y):
-	"grad converts h to the right gradient vector and return the dot product with (x,y)"
 	vectors = np.array([[0,1],[0,-1],[1,0],[-1,0]])
 	g = vectors[h%4]
 	return g[:,:,0] * x + g[:,:,1] * y
 
+#Generates the hazed and clear image datasets from the original images created by google_mps_api.py
 def generate():
 	kernel = np.ones((3,3),np.uint8)
 
@@ -98,6 +101,7 @@ def generate():
 		
 				hazing(images, kernel, blank, file)
 
+#Creates list of rotated images from original one
 def rotate(normal_img):
 
 	images = list()
@@ -115,6 +119,7 @@ def rotate(normal_img):
 
 	return images
 
+#Adds haze to the images and saves the clean and hazed images
 def hazing(images, kernel, blank, fileName):
 	i = 0
 	for img in images:

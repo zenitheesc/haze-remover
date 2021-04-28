@@ -4,23 +4,20 @@ import numpy as np
 import cv2
 import os
 
-batchSize = 16
+#Runs network through a big image, segments it into 256x256 pieces in order to do so
 
-print(os.getcwd())
+batchSize = 16
 
 entrada = cv2.imread("network\\sat_test.png")
 entrada = cv2.cvtColor(entrada,cv2.COLOR_BGR2RGB)
 
-print(entrada.shape)
-
 num_x = int(entrada.shape[0]/256)
 num_y = int(entrada.shape[1]/256)
-
-print(num_x,num_y)
 
 crops = []
 crops.append([])
 
+#Cuts main image into 256x256 pieces, adds them into list
 for i in range(num_x):
 	for j in range(num_y):
 		if(i*(j+1)%batchSize == 0 and (i != 0 or j!= 0)):
@@ -40,6 +37,7 @@ model = tf.keras.models.load_model("network\\models_old")
 encoded_imgs = list()
 decoded_imgs = list()
 
+#Applies Model to the images
 for i in range(len(np_crops)):
 	encoded_imgs.append(model.encoder(np_crops[i]).numpy())
 	decoded_imgs.append(model.decoder(encoded_imgs[i]))
@@ -54,6 +52,7 @@ for res in crops:
 	for img in res:
 		cropped.append(img)
 
+#Combines results of model into a single image
 for res in decoded_imgs:
 	for img in res:
 		i = int(count/num_y)
@@ -68,6 +67,7 @@ resultado = resultado.astype(np.uint8)
 offset = 150
 n = 8
 
+#Shows results for one 256x256 segment
 plt.figure(figsize=(20, 7))
 plt.subplots_adjust(left=0.001, right=0.999, bottom=0, top=1, wspace=0.01, hspace=0)
 plt.gray()
@@ -88,6 +88,7 @@ for i in range(n):
 
 plt.show()
 
+#Shows results
 plt.figure(figsize=(20, 7))
 plt.subplots_adjust(left=0.001, right=0.999, bottom=0, top=1, wspace=0.01, hspace=0)
 plt.gray()

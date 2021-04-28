@@ -6,9 +6,11 @@ from tensorflow.keras.layers import Conv2DTranspose, Conv2D, Input
 from tensorflow.keras.callbacks import ModelCheckpoint
 import os
 
+#Runs model on validation images
 
 BatchSize = 32
 
+#Loads images into validation subset
 x_test = tf.keras.preprocessing.image_dataset_from_directory(
 	"images\\clean",
 	label_mode = None,
@@ -34,6 +36,7 @@ x_test_noisy = tf.keras.preprocessing.image_dataset_from_directory(
 	subset = "validation"
 )
 
+#Converts images to float32
 test_haze = []
 for images in x_test_noisy.take(1):
     for i in range(BatchSize):
@@ -53,15 +56,17 @@ for images in x_test.take(1):
 test_haze = np.array(test_haze)
 test = np.array(test)
 
-# Load Model
+#Loads Model
 model = tf.keras.models.load_model("network\\models")
 
+#Applies Model
 encoded_imgs=model.encoder(test_haze).numpy()
 decoded_imgs=model.decoder(encoded_imgs)
 
 offset = 2
 n = 8
 
+#Shows results
 plt.figure(figsize=(20, 7))
 plt.subplots_adjust(left=0.01, right=0.99, bottom=0, top=1, wspace=0.05, hspace=0)
 plt.gray()

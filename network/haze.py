@@ -8,7 +8,9 @@ from tensorflow.keras.layers import Conv2DTranspose, Conv2D, Input, Dense, MaxPo
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras import losses
 
-#Rede
+#Trains the network on the available images
+
+#Neural Network
 class HazeRemover(tf.keras.Model): 
   def __init__(self):
 
@@ -33,13 +35,14 @@ class HazeRemover(tf.keras.Model):
     decoded = self.decoder(encoded)
     return decoded
 
+#Divides uint8 images by 255 and converts to float32
 def process(image):
     image = tf.cast(image/255. ,tf.float32)
     return image
 
 BatchSize = 24
 
-#imagens originais
+#Training dataset of clean images
 x_train = tf.keras.preprocessing.image_dataset_from_directory(
   "images\\clean",
   label_mode = None,
@@ -51,6 +54,7 @@ x_train = tf.keras.preprocessing.image_dataset_from_directory(
   validation_split = 0.1,
   subset = "training"
 )
+#Validation dataset of clean images
 x_test = tf.keras.preprocessing.image_dataset_from_directory(
   "images\\clean",
   label_mode = None,
@@ -63,7 +67,7 @@ x_test = tf.keras.preprocessing.image_dataset_from_directory(
   subset = "validation"
 )
 
-#imagens com nuvem
+#Training dataset of hazed images
 x_train_noisy = tf.keras.preprocessing.image_dataset_from_directory(
   "images\\hazed",
   label_mode = None,
@@ -75,6 +79,7 @@ x_train_noisy = tf.keras.preprocessing.image_dataset_from_directory(
   validation_split = 0.1,
   subset = "training"
 )
+#Validation dataset of hazed images
 x_test_noisy = tf.keras.preprocessing.image_dataset_from_directory(
   "images\\hazed",
   label_mode = None,
@@ -87,17 +92,21 @@ x_test_noisy = tf.keras.preprocessing.image_dataset_from_directory(
   subset = "validation"
 )
 
-#Normaliza para [0,1]
+#Changes image to float32
 train = x_train.map(process)
 train_noisy = x_train_noisy.map(process)
 test = x_test.map(process)
 test_noisy = x_test_noisy.map(process)
 
-#Criar os pares de Dataset
+#Joins the pairs of datasets
 dataset_train = tf.data.Dataset.zip( (train_noisy, train) )
 dataset_val = tf.data.Dataset.zip( (test_noisy, test) )
 
-#Salva os checkpoints
+#shuffles the datasets
+dataset_train = dataset_train.shuffle()
+dataset_val = dataset_val.shuffle()
+
+#Saves checkpoints
 checkpointPath = "network\\checkpoints\\model_{epoch:02d}_{val_loss:.5f}.hdf5"
 checkpoint = ModelCheckpoint(
   checkpointPath,
@@ -108,35 +117,40 @@ checkpoint = ModelCheckpoint(
   mode = 'auto',
   save_freq = "epoch"
 )
+
+#Loads the model, if available. Creates a new one if not
 try:
   autoencoder = tf.keras.models.load_model("network\\models")
   print("###########################")
   print("#########Carregado#########")
   print("###########################")
 except:
-  #Cria e compila a rede
+  #Creates and compiles the network
   autoencoder = HazeRemover()
   autoencoder.compile(optimizer='adam',
                       loss = ['mse', 'binary_crossentropy'],
                       loss_weights = [12.5, 2.5])
 
   autoencoder.build((None,256,256,3))
+
+#Prints the summary of the network
 autoencoder.encoder.summary()
 autoencoder.decoder.summary()
 autoencoder.summary()
 
-#Treina a rede
+#Trains the model
 autoencoder.fit(
   dataset_train,
-  epochs = 5,
+  epochs = 15,
   shuffle = False,
   validation_data = dataset_val,
   callbacks = [checkpoint]
 )
 
-#Salva rede
+#Saves the network
 autoencoder.save("network\\models")
 
+#Loads a batch of images
 test_haze = []
 for images in x_test_noisy.take(1):
     for i in range(BatchSize):
@@ -153,34 +167,34 @@ for images in x_test.take(1):
         img = img.astype(np.float32)
         test.append(img)
 
-#Pega as imagens do datase como np.arrays, precisa para rodar o encoder nelas
+#Converts the images to pass it through the model
 test_haze = np.array(test_haze)
 test = np.array(test)
 
-#Aplica rede nas imagens carregadas
+#Applies model to the images
 encoded_imgs=autoencoder.encoder(test_haze).numpy()
 decoded_imgs=autoencoder.decoder(encoded_imgs)
 
-#Mostra resultado
+#Shows results
 n = 8
 plt.figure(figsize=(20, 7))
 plt.gray()
 for i in range(n): 
-  # display original + noise 
+  #Display original + noise 
   bx = plt.subplot(3, n, i + 1) 
   plt.title("original + noise") 
   plt.imshow(tf.squeeze(test_haze[i])) 
   bx.get_xaxis().set_visible(False) 
   bx.get_yaxis().set_visible(False) 
   
-  # display reconstruction 
+  #Display reconstruction 
   cx = plt.subplot(3, n, i + n + 1) 
   plt.title("reconstructed") 
   plt.imshow(tf.squeeze(decoded_imgs[i])) 
   cx.get_xaxis().set_visible(False) 
   cx.get_yaxis().set_visible(False) 
   
-  # display original 
+  #Display original 
   ax = plt.subplot(3, n, i + 2*n + 1) 
   plt.title("original") 
   plt.imshow(tf.squeeze(test[i])) 

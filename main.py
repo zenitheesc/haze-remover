@@ -3,6 +3,8 @@ from dataset import google_mps_api
 from dataset import generate
 import os
 
+#Generates the image dataset in the folder 'images'
+
 if __name__ == "__main__":
     
     if(not (os.path.exists("images"))):
